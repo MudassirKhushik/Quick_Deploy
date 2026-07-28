@@ -1,11 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import asyncio
-
 from app.agent import run_deployment
 
-app = FastAPI(title="DeployBot")
+app = FastAPI(title="Quick Deploy - AI Deployment Agent")
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,11 +14,11 @@ app.add_middleware(
 
 class DeployRequest(BaseModel):
     repo_url: str
-    prompt: str = "Deploy this app to DigitalOcean App Platform"
+    prompt: str = "Deploy this to DigitalOcean"
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "service": "DeployBot"}
+    return {"status": "ok", "service": "Quick Deploy"}
 
 @app.post("/deploy")
 async def deploy(request: DeployRequest):
