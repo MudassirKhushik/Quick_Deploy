@@ -85,3 +85,24 @@ docker build -t deploybot-sandbox sandbox/
 # 6. Start the server
 cd backend
 uvicorn app.main:app --reload
+
+## 🐳 Docker Compose (One-Command Setup)
+
+```bash
+# 1. Clone and enter the repo
+git clone https://github.com/MudassirKhushik/Quick_Deploy.git
+cd Quick_Deploy
+
+# 2. Set your tokens in .env
+cp .env.example .env
+# Edit .env with your DO_API_TOKEN and GEMINI_API_KEY
+
+# 3. Build sandbox image
+docker build -t deploybot-sandbox sandbox/
+
+# 4. Start everything
+docker-compose up -d
+
+# 5. Open in browser
+# Frontend: http://localhost:3000
+# API Docs: http://localhost:8000/docs

@@ -1,15 +1,18 @@
-FROM ubuntu:22.04
+FROM python:3.11-slim
 
+WORKDIR /app
+
+# Install Docker CLI (to communicate with host Docker)
 RUN apt-get update && apt-get install -y \
     curl \
-    git \
-    nodejs \
-    npm \
-    python3 \
-    python3-pip \
-    && rm -rf /var/lib/apt/lists/*
+    && curl -fsSL https://get.docker.com -o get-docker.sh \
+    && sh get-docker.sh \
+    && rm get-docker.sh \
+    && apt-get clean
 
-RUN curl -sL https://github.com/digitalocean/doctl/releases/download/v1.104.0/doctl-1.104.0-linux-amd64.tar.gz | tar -xzv
-RUN mv doctl /usr/local/bin
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /workspace
+COPY . .
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Deploy - AI Deployment Agent</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #8892b0;
+            font-size: 1.1rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #00d4ff;
+            margin: 5px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ccd6f6;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+        .input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        .deploy-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00d4ff, #7b2ff7);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .deploy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(123, 47, 247, 0.3);
+        }
+        .deploy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            display: none;
+        }
+        .result.show { display: block; }
+        .result.success { border-left: 4px solid #00ff88; }
+        .result.error { border-left: 4px solid #ff4757; }
+        .result h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .result.success h3 { color: #00ff88; }
+        .result.error h3 { color: #ff4757; }
+        .result .url {
+            display: block;
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 8px;
+            color: #00d4ff;
+            text-decoration: none;
+            word-break: break-all;
+            font-family: monospace;
+        }
+        .result .url:hover { background: rgba(0, 212, 255, 0.2); }
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loader.show { display: block; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+        .footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Quick Deploy</h1>
+            <p>AI-Powered Deployment to DigitalOcean</p>
+            <div style="margin-top: 15px;">
+                <span class="badge">🤖 Gemini AI</span>
+                <span class="badge">🐳 Docker</span>
+                <span class="badge">☁️ DigitalOcean</span>
+                <span class="badge">⚡ FastAPI</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>GitHub Repository URL</label>
+            <input type="text" id="repoUrl" placeholder="https://github.com/username/repo" />
+        </div>
+
+        <div class="input-group">
+            <label>Deployment Instructions (optional)</label>
+            <textarea id="prompt" placeholder="e.g., Deploy this Node.js app to DigitalOcean App Platform"></textarea>
+        </div>
+
+        <button class="deploy-btn" onclick="deployApp()" id="deployBtn">
+            ⚡ Deploy Now
+        </button>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>Deploying your app... This may take a minute</p>
+            <p style="font-size: 0.8rem; color: #8892b0;">Cloning → Analyzing → Generating Config → Deploying</p>
+        </div>
+
+        <div class="result" id="result">
+            <h3 id="resultTitle"></h3>
+            <p id="resultMsg"></p>
+            <a href="#" target="_blank" class="url" id="liveUrl" style="display: none;"></a>
+            <details style="margin-top: 15px;">
+                <summary style="cursor: pointer; color: #8892b0;">View App Spec</summary>
+                <pre id="appSpec" style="margin-top: 10px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 8px; overflow-x: auto; font-size: 0.85rem; color: #ccd6f6;"></pre>
+            </details>
+        </div>
+
+        <div class="footer">
+            Built with ❤️ by <a href="https://github.com/MudassirKhushik">Mudassir Khushik</a> | 
+            <a href="https://github.com/MudassirKhushik/Quick_Deploy">GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        async function deployApp() {
+            const repoUrl = document.getElementById('repoUrl').value.trim();
+            const prompt = document.getElementById('prompt').value.trim() || 'Deploy to DigitalOcean';
+            const deployBtn = document.getElementById('deployBtn');
+            const loader = document.getElementById('loader');
+            const result = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMsg = document.getElementById('resultMsg');
+            const liveUrl = document.getElementById('liveUrl');
+            const appSpec = document.getElementById('appSpec');
+
+            if (!repoUrl) {
+                alert('Please enter a GitHub repository URL');
+                return;
+            }
+
+            // Reset
+            result.classList.remove('show', 'success', 'error');
+            loader.classList.add('show');
+            deployBtn.disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:8000/deploy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ repo_url: repoUrl, prompt: prompt })
+                });
+
+                const data = await response.json();
+                
+                loader.classList.remove('show');
+                result.classList.add('show');
+
+                if (data.success) {
+                    result.classList.add('success');
+                    resultTitle.textContent = '✅ Deployment Successful!';
+                    resultMsg.textContent = `Project type: ${data.project_type}`;
+                    
+                    if (data.live_url && data.live_url.startsWith('http')) {
+                        liveUrl.style.display = 'block';
+                        liveUrl.href = data.live_url;
+                        liveUrl.textContent = '🔗 ' + data.live_url;
+                    }
+                } else {
+                    result.classList.add('error');
+                    resultTitle.textContent = '❌ Deployment Failed';
+                    resultMsg.textContent = data.error || data.deploy_output || 'Unknown error';
+                }
+
+                if (data.app_spec) {
+                    appSpec.textContent = data.app_spec;
+                }
+            } catch (error) {
+                loader.classList.remove('show');
+                result.classList.add('show', 'error');
+                resultTitle.textContent = '❌ Connection Error';
+                resultMsg.textContent = 'Could not connect to DeployBot. Is the server running?';
+            } finally {
+                deployBtn.disabled = false;
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('repoUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') deployApp();
+        });
+    </script>
+</body>
+</html>
